@@ -9,9 +9,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/v1")
@@ -56,4 +62,20 @@ public class CustomerController1 {
         response.put("sessionUser", userObject);
         return (ResponseEntity<?>) ResponseEntity.ok(response);
     }
+
+
+    @GetMapping("/")
+    public String getSession(HttpServletRequest httpServletRequest) {
+        return "Tu id de sesión: "+ httpServletRequest.getSession().getId();
+    }
+
+    //Hay que obtener el token csrf para las peticiones POST, PUT y DELETE
+    //Hay que añadir este token a la cabecera con X-CSRF-TOKEN
+
+    @GetMapping("/csrf-token")
+    public CsrfToken getCsrfToken(HttpServletRequest httpServletRequest) {
+        return (CsrfToken) httpServletRequest.getAttribute("_csrf");
+    }
+    
+    
 }

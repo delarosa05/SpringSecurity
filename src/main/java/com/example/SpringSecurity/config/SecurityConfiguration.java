@@ -46,7 +46,7 @@ public class SecurityConfiguration {
     
     public AuthenticationSuccessHandler successHandler(){ //Esto es lo que sucede si se inicia sesión exitosamente 
         return ((request, response, authentication)->{
-            response.sendRedirect("/v1/session");
+            response.sendRedirect("/v1/");
         });
     }
 }
