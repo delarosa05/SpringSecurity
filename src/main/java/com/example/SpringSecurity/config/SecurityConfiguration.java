@@ -1,5 +1,6 @@
 package com.example.SpringSecurity.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -14,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -24,7 +26,8 @@ import com.example.SpringSecurity.User.MyUserDetailsService;
 @EnableWebSecurity //Configurar seguridad de nuestra aplicacion
 public class SecurityConfiguration {
 
-
+    @Autowired
+    private MyUserDetailsService myUserDetailsService;
 
     @Bean
     //Interfaz de Spring Security para configurar la seguridad
@@ -61,20 +64,18 @@ public class SecurityConfiguration {
     }
 
 
-    @Bean 
-    //Este metodo sirve para personalizar el filtro de verificacion de Usuario y Contraseña
-    public UserDetailsService userDetailsService(){
-        return new InMemoryUserDetailsManager(); //Este objeto (INBUILD) implementa una clase que implementa UserDetailService
-
+    @Bean public 
+    PasswordEncoder passwordEncoder() { 
+        return new BCryptPasswordEncoder(); 
     }
+
 
     @Bean
     public AuthenticationProvider authenticationProvider(){
          
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(myUserDetailsService);
         provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
-        provider.setUserDetailsService(userDetailsService());
-
         return provider;
     }
 
