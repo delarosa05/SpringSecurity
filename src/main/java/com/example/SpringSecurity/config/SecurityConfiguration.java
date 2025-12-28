@@ -2,25 +2,35 @@ package com.example.SpringSecurity.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configurers.userdetails.DaoAuthenticationConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+
+import com.example.SpringSecurity.User.MyUserDetailsService;
 
 @Configuration
 @EnableWebSecurity //Configurar seguridad de nuestra aplicacion
 public class SecurityConfiguration {
 
-    //Configuration One (con funciones lambda)
+
 
     @Bean
     //Interfaz de Spring Security para configurar la seguridad
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception { 
         return httpSecurity
-                //.csrf() //Si lo ponemos --> Inhabilitamos la seguridad que ofrece Spring frente a CSRF
+                .csrf(csrf->csrf.disable()) //Si lo ponemos --> Inhabilitamos la seguridad que ofrece Spring frente a CSRF
                 .authorizeHttpRequests(authz -> authz
                     .requestMatchers("/v1/index2").permitAll() //Endpoints que no van a necesitar ninguna autorización
                     .anyRequest().authenticated()
@@ -49,4 +59,23 @@ public class SecurityConfiguration {
             response.sendRedirect("/v1/");
         });
     }
+
+
+    @Bean 
+    //Este metodo sirve para personalizar el filtro de verificacion de Usuario y Contraseña
+    public UserDetailsService userDetailsService(){
+        return new InMemoryUserDetailsManager(); //Este objeto (INBUILD) implementa una clase que implementa UserDetailService
+
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider(){
+         
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
+        provider.setUserDetailsService(userDetailsService());
+
+        return provider;
+    }
+
 }

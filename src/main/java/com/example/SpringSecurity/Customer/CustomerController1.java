@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
-@RequestMapping("/v1")
+@RequestMapping("/")
 public class CustomerController1 {
 
     @Autowired
