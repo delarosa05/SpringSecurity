@@ -3,8 +3,11 @@ package com.example.SpringSecurity.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.authentication.configurers.userdetails.DaoAuthenticationConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -36,6 +39,8 @@ public class SecurityConfiguration {
                 .csrf(csrf->csrf.disable()) //Si lo ponemos --> Inhabilitamos la seguridad que ofrece Spring frente a CSRF
                 .authorizeHttpRequests(authz -> authz
                     .requestMatchers("/v1/index2").permitAll() //Endpoints que no van a necesitar ninguna autorización
+                    .requestMatchers("/customer/register").permitAll()
+                    .requestMatchers(HttpMethod.POST,"/customer/login").permitAll()
                     .anyRequest().authenticated()
                 )
                 .formLogin(frm -> frm.permitAll()
@@ -77,6 +82,11 @@ public class SecurityConfiguration {
         provider.setUserDetailsService(myUserDetailsService);
         provider.setPasswordEncoder(passwordEncoder); //Usa el bean PasswordEncoder inyectado
         return provider;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
+        return config.getAuthenticationManager();
     }
 
 }

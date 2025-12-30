@@ -86,6 +86,13 @@ public class UsersController {
         
         return userService.register(user);
     }
+
+    @PostMapping("/login")
+    public String login(@RequestBody com.example.SpringSecurity.User.User user) {
+        //TODO: process POST request
+        return userService.verify(user);
+    }
+    
     
     
     
