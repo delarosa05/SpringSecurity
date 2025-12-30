@@ -1,4 +1,4 @@
-package com.example.SpringSecurity.Customer;
+package com.example.SpringSecurity.User;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,17 +15,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
-@RequestMapping("/")
-public class CustomerController1 {
+@RequestMapping("/customer")
+public class UsersController {
 
     @Autowired
     private SessionRegistry sessionRegistry;
-
+    @Autowired
+    private UserService userService;
     
     @GetMapping("/index")
     public String getCustomer() {
@@ -76,6 +78,15 @@ public class CustomerController1 {
     public CsrfToken getCsrfToken(HttpServletRequest httpServletRequest) {
         return (CsrfToken) httpServletRequest.getAttribute("_csrf");
     }
+
+
+    @PostMapping("/register")
+    public com.example.SpringSecurity.User.User register(@RequestBody com.example.SpringSecurity.User.User user) {
+        //TODO: process POST request
+        
+        return userService.register(user);
+    }
+    
     
     
 }

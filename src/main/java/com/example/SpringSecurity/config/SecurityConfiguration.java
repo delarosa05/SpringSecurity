@@ -47,7 +47,7 @@ public class SecurityConfiguration {
                                 .maximumSessions(1)
                                 .expiredUrl("/login") //Redireccion cuando expira la sesión
                                 .sessionRegistry(sessionRegistry())) 
-                //.httpBasic() //Enviamos nuestro usuario y contraseña en el HEADER de la petición
+                .httpBasic(hb -> {}) //Enviamos nuestro usuario y contraseña en el HEADER de la petición
                                                 
                 .build();
     }
@@ -59,23 +59,23 @@ public class SecurityConfiguration {
     
     public AuthenticationSuccessHandler successHandler(){ //Esto es lo que sucede si se inicia sesión exitosamente 
         return ((request, response, authentication)->{
-            response.sendRedirect("/v1/");
+            response.sendRedirect("/");
         });
     }
 
 
     @Bean public 
     PasswordEncoder passwordEncoder() { 
-        return new BCryptPasswordEncoder(); 
+        return new BCryptPasswordEncoder(12); 
     }
 
 
     @Bean
-    public AuthenticationProvider authenticationProvider(){
+    public AuthenticationProvider authenticationProvider(PasswordEncoder passwordEncoder){
          
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(myUserDetailsService);
-        provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
+        provider.setPasswordEncoder(passwordEncoder); //Usa el bean PasswordEncoder inyectado
         return provider;
     }
 
